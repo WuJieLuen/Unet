@@ -3,8 +3,8 @@
 model_name = 'Vanila_UNet'
 PATCH_SIZE = 128 # 128 or 256
 batch = 32
-learning_rate = 1e-3
-num_ep = 50
+learning_rate = 1e-4
+num_ep = 20
 patience = 10
 checkpoints_period = -1 # -1 for no checkpoint
 is_use_pretrained = False
@@ -39,11 +39,11 @@ train_df, test_df = train_test_split(train_df, stratify=train_df.diagnosis, test
 train_df = train_df.reset_index(drop=True)
 transforms = A.Compose([
     A.Resize(width = PATCH_SIZE, height = PATCH_SIZE, p=1.0),
-    # A.HorizontalFlip(p=0.5),
-    # A.VerticalFlip(p=0.5),
-    # A.RandomRotate90(p=0.5),
-    # A.Transpose(p=0.5),
-    # A.ShiftScaleRotate(shift_limit=0.01, scale_limit=0.04, rotate_limit=0, p=0.25),
+    A.HorizontalFlip(p=0.5),
+    A.VerticalFlip(p=0.5),
+    A.RandomRotate90(p=0.5),
+    A.Transpose(p=0.5),
+    A.ShiftScaleRotate(shift_limit=0.01, scale_limit=0.04, rotate_limit=0, p=0.25),
     A.Normalize(p=1.0),
     ToTensorV2(),
 ])
@@ -154,6 +154,15 @@ for epoch in range(num_ep):
     if early_stop_counter >= patience:
         print(f'Early stopping at epoch {epoch}')
         break
+# plot loss history
+import matplotlib.pyplot as plt
+plt.plot(losses)
+plt.title('Loss history')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.show()
+# plot train history
+
 
 print('Training is done.')
 print('Model saved as unet_model.pt.\n')

@@ -42,7 +42,7 @@ def double_conv(in_channels, out_channels):
 class UNet(nn.Module):
     def __init__(self):
         super().__init__()
-        base = 64
+        base = 32
         # Define convolutional layers
         # These are used in the "down" path of the U-Net,
         # where the image is successively downsampled
@@ -50,20 +50,16 @@ class UNet(nn.Module):
         self.conv_down2 = double_conv(base, base*2)
         self.conv_down3 = double_conv(base*2, base*4)
         self.conv_down4 = double_conv(base*4, base*8)
-
         # Define max pooling layer for downsampling
         self.maxpool = nn.MaxPool2d(2)
-
         # Define upsampling layer
         self.upsample = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
-
         # Define convolutional layers
         # These are used in the "up" path of the U-Net,
         # where the image is successively upsampled
         self.conv_up3 = double_conv(base*4 + base*8, base*4)
         self.conv_up2 = double_conv(base*2 + base*4, base*2)
         self.conv_up1 = double_conv(base*2 + base, base)
-
         # Define final convolution to output correct number of classes
         # 1 because there are only two classes (tumor or not tumor)
         self.last_conv = nn.Conv2d(base, 1, kernel_size=1)
@@ -102,12 +98,18 @@ def dice_coef_loss(inputs:torch.Tensor, target:torch.Tensor):
     inputs = inputs.flatten(1)
     target = target.flatten(1)
     # make target binary
-    
     intersection = 2.0 * ((target * inputs).sum(dim=1))
     union = target.sum(dim=1) + inputs.sum(dim=1)
     dice = intersection / (union+1e-7)
     mean_dice_over_batch = dice.mean()
+
+    # original dice loss
+    # smooth = 1.0
+    # intersection = 2.0 * ((target * inputs).sum()) + smooth
+    # union = target.sum() + inputs.sum() + smooth
+    # return 1 - (intersection / union)
     return 1 - mean_dice_over_batch
+
 def dice_coef_metric(inputs:torch.Tensor, target:torch.Tensor):
     intersection = 2.0 * (target * inputs).sum()
     union = target.sum() + inputs.sum()
