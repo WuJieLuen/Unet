@@ -42,7 +42,7 @@ def double_conv(in_channels, out_channels):
 class UNet(nn.Module):
     def __init__(self):
         super().__init__()
-        base = 32
+        base = 64
         # Define convolutional layers
         # These are used in the "down" path of the U-Net,
         # where the image is successively downsampled
@@ -121,7 +121,7 @@ def bce_dice_loss(inputs:torch.Tensor, target:torch.Tensor):
     bcescore = nn.BCELoss()
     bceloss = bcescore(inputs, target)
 
-    return 5*bceloss + dicescore
+    return bceloss + dicescore
 
 # Training method
 

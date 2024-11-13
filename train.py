@@ -3,8 +3,8 @@
 model_name = 'Vanila_UNet'
 PATCH_SIZE = 128 # 128 or 256
 batch = 32
-learning_rate = 0.1
-num_ep = 30
+learning_rate = 1e-3
+num_ep = 50
 patience = 10
 checkpoints_period = -1 # -1 for no checkpoint
 is_use_pretrained = False
@@ -60,7 +60,7 @@ from module import UNet
 if is_use_pretrained:
     print('Use pretrained model...')
     unet = torch.load('Vanila_UNet_model.pt')
-    unet_optimizer = torch.optim.SGD(unet.parameters(), lr=learning_rate)
+    unet_optimizer = torch.optim.AdamW(unet.parameters(), lr=learning_rate)
     unet_optimizer.load_state_dict(torch.load('Vanila_UNet_optimizer.pt'))
     # use new learning rate
     for param_group in unet_optimizer.param_groups:
@@ -68,7 +68,7 @@ if is_use_pretrained:
 else:   
     print('Create new model and optimizer...')
     unet = UNet().to(device)
-    unet_optimizer = torch.optim.SGD(unet.parameters(), lr=learning_rate)
+    unet_optimizer = torch.optim.AdamW(unet.parameters(), lr=learning_rate)
     pass
 
 

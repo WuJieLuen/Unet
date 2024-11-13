@@ -1,6 +1,6 @@
 # User Configuration
 sample_number = 5   # Number of samples to show (Ramdaomly selected)
-type = "sane"      # "tumor" or "sane"
+type = "tumor"      # "tumor" or "sane"
 is_show = True      # True for show, False for not show
 is_save = True     # True for save, False for not save
 
